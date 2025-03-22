@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoliSport - Testimonios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .testimonio-card {
+            transition: transform 0.3s;
+        }
+        .testimonio-card:hover {
+            transform: translateY(-5px);
+        }
+        .cliente-imagen {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .rating {
+            color: #FFC107;
+        }
+        .testimonio-control {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #0d6efd;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header fijo -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
+        <div class="container">
+            <a class="navbar-brand fs-3 fw-bold" href="index.html">
+                <i class="fas fa-running me-2"></i>PoliSport
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link active" href="index.html"><i class="fas fa-home me-1"></i>Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="productos.html"><i class="fas fa-tags me-1"></i>Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="reseñas.html"><i class="fas fa-star me-1"></i>Reseñas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contacto.html"><i class="fas fa-envelope me-1"></i>Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ofertas.html"><i class="fas fa-percentage me-1"></i>Ofertas <span class="badge bg-danger ms-1">¡NUEVO!</span></a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <form class="me-3 d-none d-lg-block" role="search">
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="search" placeholder="Buscar productos..." aria-label="Buscar">
+                            <button class="btn btn-light btn-sm" type="submit"><i class="fas fa-search"></i></button>
+                        </div>
+                    </form>
+                    <a href="carrito.html" class="btn btn-outline-light btn-sm position-relative me-2">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                    </a>
+                    <a href="login.html" class="btn btn-light btn-sm me-2"><i class="fas fa-user me-1"></i>Login</a>
+                    <a href="registro.html" class="btn btn-danger btn-sm"><i class="fas fa-user-plus me-1"></i>Registro</a>
+                </div>
+            </div>
+        </div>
+    </header>
+      
+    <!-- Sección de Testimonios con espaciado adicional para evitar que quede debajo del header -->
+    <section class="py-5 bg-light mt-5 pt-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Lo que dicen nuestros clientes</h2>
+                <p class="text-muted">Más de 1,000 deportistas confían en nosotros</p>
+            </div>
+
+            <!-- Carrusel de Testimonios -->
+            <div id="testimoniosCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <!-- Grupo 1 -->
+                    <div class="carousel-item active">
+                        <div class="row">
+                            <div class="col-md-4 mb-4 mb-md-0">
+                                <div class="card h-100 shadow testimonio-card">
+                                    <div class="card-body text-center">
+                                        <img src="/api/placeholder/160/160" class="cliente-imagen mb-3" alt="Cliente">
+                                        <div class="rating mb-2">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                        <p class="card-text fst-italic">"Las zapatillas que compré en PoliSport han mejorado mi rendimiento en la carrera. Súper cómodas y duraderas, la mejor compra que he hecho este año."</p>
+                                        <h5 class="card-title mb-1">Laura Gómez</h5>
+                                        <p class="small text-muted">Corredora amateur</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4 mb-md-0">
+                                <div class="card h-100 shadow testimonio-card">
+                                    <div class="card-body text-center">
+                                        <img src="far fa-comment-dots" class="cliente-imagen mb-3" alt="Cliente">
+                                        <div class="rating mb-2">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                        <p class="card-text fst-italic">"Gran servicio al cliente. Tuve un problema con un pedido y me lo resolvieron inmediatamente. Además, tienen los mejores precios del mercado en equipamiento de fútbol."</p>
+                                        <h5 class="card-title mb-1">Miguel Ángel Rodríguez</h5>
+                                        <p class="small text-muted">Entrenador de fútbol</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card h-100 shadow testimonio-card">
+                                    <div class="card-body text-center">
+                                        <img src="/api/placeholder/160/160" class="cliente-imagen mb-3" alt="Cliente">
+                                        <div class="rating mb-2">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                        <p class="card-text fst-italic">"Compro todo mi material de natación en PoliSport. Calidad excepcional y envíos rápidos. Sus gafas de natación profesionales son las mejores que he usado."</p>
+                                        <h5 class="card-title mb-1">Ana Martínez</h5>
+                                        <p class="small text-muted">Nadadora profesional</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Grupo 2 -->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-md-4 mb-4 mb-md-0">
+                                <div class="card h-100 shadow testimonio-card">
+                                    <div class="card-body text-center">
+                                        <img src="/api/placeholder/160/160" class="cliente-imagen mb-3" alt="Cliente">
+                                        <div class="rating mb-2">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                        <p class="card-text fst-italic">"Las pesas ajustables que compré son perfectas para mi entrenamiento en casa. Excelente relación calidad-precio y envío rápido."</p>
+                                        <h5 class="card-title mb-1">Carlos Sánchez</h5>
+                                        <p class="small text-muted">Entusiasta del fitness</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4 mb-md-0">
+                                <div class="card h-100 shadow testimonio-card">
+                                    <div class="card-body text-center">
+                                        <img src="/api/placeholder/160/160" class="cliente-imagen mb-3" alt="Cliente">
+                                        <div class="rating mb-2">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                        <p class="card-text fst-italic">"Como entrenador de baloncesto, siempre recomiendo PoliSport a mis jugadores. Tienen todo lo necesario y el equipo es de primera calidad."</p>
+                                        <h5 class="card-title mb-1">Javier López</h5>
+                                        <p class="small text-muted">Entrenador de baloncesto</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card h-100 shadow testimonio-card">
+                                    <div class="card-body text-center">
+                                        <img src="/api/placeholder/160/160" class="cliente-imagen mb-3" alt="Cliente">
+                                        <div class="rating mb-2">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                        <p class="card-text fst-italic">"Me encanta la ropa deportiva de PoliSport. Transpirable, cómoda y duradera. Tengo varias camisetas técnicas y son fantásticas para mis clases de yoga."</p>
+                                        <h5 class="card-title mb-1">Elena Torres</h5>
+                                        <p class="small text-muted">Instructora de yoga</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Controles del carrusel -->
+                <button class="carousel-control-prev testimonio-control position-absolute top-50 start-0 translate-middle-y" type="button" data-bs-target="#testimoniosCarousel" data-bs-slide="prev" style="left: -20px;">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next testimonio-control position-absolute top-50 end-0 translate-middle-y" type="button" data-bs-target="#testimoniosCarousel" data-bs-slide="next" style="right: -20px;">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Siguiente</span>
+                </button>
+            </div>
+
+            <!-- Formulario para añadir testimonio -->
+            <div class="row mt-5">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">¿Has comprado con nosotros? ¡Comparte tu experiencia!</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="testimonioForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <label for="nombre" class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" id="nombre" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="actividad" class="form-label">Actividad/Profesión</label>
+                                        <input type="text" class="form-control" id="actividad">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Valoración</label>
+                                    <div class="rating-select">
+                                        <div class="btn-group" role="group">
+                                            <input type="radio" class="btn-check" name="valoracion" id="star5" value="5" checked>
+                                            <label class="btn btn-outline-warning" for="star5">5 <i class="fas fa-star"></i></label>
+                                            
+                                            <input type="radio" class="btn-check" name="valoracion" id="star4" value="4">
+                                            <label class="btn btn-outline-warning" for="star4">4 <i class="fas fa-star"></i></label>
+                                            
+                                            <input type="radio" class="btn-check" name="valoracion" id="star3" value="3">
+                                            <label class="btn btn-outline-warning" for="star3">3 <i class="fas fa-star"></i></label>
+                                            
+                                            <input type="radio" class="btn-check" name="valoracion" id="star2" value="2">
+                                            <label class="btn btn-outline-warning" for="star2">2 <i class="fas fa-star"></i></label>
+                                            
+                                            <input type="radio" class="btn-check" name="valoracion" id="star1" value="1">
+                                            <label class="btn btn-outline-warning" for="star1">1 <i class="fas fa-star"></i></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="comentario" class="form-label">Tu comentario</label>
+                                    <textarea class="form-control" id="comentario" rows="3" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Enviar testimonio</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>PoliSport - Tienda Deportiva</h5>
+                    <p>Tu tienda de confianza para todo tipo de equipamiento deportivo. Encuentra los mejores productos para tu deporte favorito.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-white">Inicio</a></li>
+                        <li><a href="productos.html" class="text-white">Productos</a></li>
+                        <li><a href="reseñas.html" class="text-white">Reseñas</a></li>
+                        <li><a href="contacto.html" class="text-white">Contacto</a></li>
+                        <li><a href="ofertas.html" class="text-white">Ofertas</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contacto</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-map-marker-alt me-2"></i>Dirección: Calle Falsa 123, Ciudad</li>
+                        <li><i class="fas fa-phone me-2"></i>Teléfono: +123 456 789</li>
+                        <li><i class="fas fa-envelope me-2"></i>Email: info@polisport.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <p>&copy; 2023 PoliSport. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Script para manejar el envío de testimonios
+        document.addEventListener('DOMContentLoaded', function() {
+            const testimonioForm = document.getElementById('testimonioForm');
+            
+            testimonioForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Obtener datos del formulario
+                const nombre = document.getElementById('nombre').value;
+                const actividad = document.getElementById('actividad').value;
+                const valoracion = document.querySelector('input[name="valoracion"]:checked').value;
+                const comentario = document.getElementById('comentario').value;
+                
+                // Crear objeto de testimonio
+                const testimonio = {
+                    id: Date.now(),
+                    nombre: nombre,
+                    actividad: actividad,
+                    valoracion: valoracion,
+                    comentario: comentario,
+                    fecha: new Date().toISOString()
+                };
+                
+                // Guardar en localStorage
+                guardarTestimonio(testimonio);
+                
+                // Mostrar mensaje de éxito
+                alert('¡Gracias por compartir tu experiencia! Tu testimonio se ha enviado correctamente.');
+                
+                // Resetear formulario
+                testimonioForm.reset();
+            });
+            
+            // Función para guardar testimonio en localStorage
+            function guardarTestimonio(testimonio) {
+                // Obtener testimonios existentes
+                let testimonios = JSON.parse(localStorage.getItem('testimonios')) || [];
+                
+                // Añadir nuevo testimonio
+                testimonios.push(testimonio);
+                
+                // Guardar en localStorage
+                localStorage.setItem('testimonios', JSON.stringify(testimonios));
+            }
+        });
+    </script>
+</body>
+</html>
