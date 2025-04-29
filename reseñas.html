@@ -337,5 +337,39 @@
             }
         });
     </script>
+	<script>
+    // Mostrar estado de login y rol
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        const loginBtn = document.querySelector('a[href="login.html"]');
+        const registerBtn = document.querySelector('a[href="registro.html"]');
+        
+        if (currentUser) {
+            loginBtn.innerHTML = `<i class="fas fa-user me-1"></i>${currentUser.nombre}`;
+            loginBtn.href = "#";
+            loginBtn.classList.add('disabled');
+            
+            registerBtn.innerHTML = `<i class="fas fa-sign-out-alt me-1"></i>Cerrar sesión`;
+            registerBtn.href = "#";
+            registerBtn.addEventListener('click', function() {
+                sessionStorage.removeItem('currentUser');
+                window.location.href = "index.html";
+            });
+            
+            // Si es admin, mostrar enlace al panel
+            if (currentUser.role === "admin") {
+                const nav = document.querySelector('.navbar-nav');
+                const adminLink = `
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.html">
+                            <i class="fas fa-cog me-1"></i>Admin
+                        </a>
+                    </li>
+                `;
+                nav.insertAdjacentHTML('beforeend', adminLink);
+            }
+        }
+    });
+</script>
 </body>
 </html>

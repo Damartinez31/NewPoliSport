@@ -147,44 +147,76 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const loginForm = document.getElementById('loginForm');
+		
+		loginForm.addEventListener('submit', function(e) {
+			e.preventDefault();
+			
+			const email = document.getElementById('email').value;
+			const password = document.getElementById('password').value;
+			
+			const usuarios = JSON.parse(localStorage.getItem('polisport_users')) || [];
+			const usuario = usuarios.find(user => user.email === email);
+			
+			if (!usuario) {
+				alert('Email no registrado. Por favor, regístrate primero.');
+				return;
+			}
+			
+			if (usuario.password !== password) {
+				alert('Contraseña incorrecta. Por favor, inténtalo de nuevo.');
+				return;
+			}
+			
+			// Guardar sesión con rol
+			sessionStorage.setItem('currentUser', JSON.stringify({
+				nombre: usuario.nombre,
+				email: usuario.email,
+				role: usuario.role
+			}));
+			
+			// Redirigir según rol
+			if (usuario.role === "admin") {
+				window.location.href = "admin.html"; // Crear esta página
+			} else {
+				window.location.href = "index.html";
+			}
+		});
+	});
+</script>
+<script>
+    // Mostrar estado de login y rol
     document.addEventListener('DOMContentLoaded', function() {
-        const loginForm = document.getElementById('loginForm');
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        const loginBtn = document.querySelector('a[href="login.html"]');
+        const registerBtn = document.querySelector('a[href="registro.html"]');
         
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        if (currentUser) {
+            loginBtn.innerHTML = `<i class="fas fa-user me-1"></i>${currentUser.nombre}`;
+            loginBtn.href = "#";
+            loginBtn.classList.add('disabled');
             
-            // Obtener datos del formulario
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            registerBtn.innerHTML = `<i class="fas fa-sign-out-alt me-1"></i>Cerrar sesión`;
+            registerBtn.href = "#";
+            registerBtn.addEventListener('click', function() {
+                sessionStorage.removeItem('currentUser');
+                window.location.href = "index.html";
+            });
             
-            // Obtener usuarios registrados
-            const usuarios = JSON.parse(localStorage.getItem('polisport_users')) || [];
-            
-            // Buscar usuario
-            const usuario = usuarios.find(user => user.email === email);
-            
-            if (!usuario) {
-                alert('Email no registrado. Por favor, regístrate primero.');
-                return;
+            // Si es admin, mostrar enlace al panel
+            if (currentUser.role === "admin") {
+                const nav = document.querySelector('.navbar-nav');
+                const adminLink = `
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.html">
+                            <i class="fas fa-cog me-1"></i>Admin
+                        </a>
+                    </li>
+                `;
+                nav.insertAdjacentHTML('beforeend', adminLink);
             }
-            
-            if (usuario.password !== password) {
-                alert('Contraseña incorrecta. Por favor, inténtalo de nuevo.');
-                return;
-            }
-            
-            // Guardar sesión (usuario actual)
-            sessionStorage.setItem('currentUser', JSON.stringify({
-                nombre: usuario.nombre,
-                email: usuario.email
-            }));
-            
-            // Mostrar mensaje de éxito
-            alert(`¡Inicio de sesión exitoso! Bienvenido de nuevo, ${usuario.nombre}.`);
-            
-            // Redirigir al inicio
-            window.location.href = "index.html";
-        });
+        }
     });
 </script>
 </body>

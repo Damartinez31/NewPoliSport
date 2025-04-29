@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - PoliSport</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js para gráficos estadísticos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Estilos personalizados */
+        .admin-section {
+            padding-top: 100px;
+        }
+        .admin-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .admin-card .card-body {
+            padding: 2rem;
+        }
+        .admin-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #0d6efd;
+        }
+        #userControls .navbar-text {
+            color: white;
+            margin-right: 10px;
+        }
+        .badge-admin {
+            background-color: #dc3545;
+        }
+        .badge-user {
+            background-color: #0d6efd;
+        }
+        .stat-card {
+            border-left: 4px solid;
+            border-radius: 4px;
+        }
+        .stat-card.primary {
+            border-left-color: #0d6efd;
+        }
+        .stat-card.success {
+            border-left-color: #198754;
+        }
+        .stat-card.warning {
+            border-left-color: #ffc107;
+        }
+        .stat-card.danger {
+            border-left-color: #dc3545;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #0d6efd;
+        }
+        .tab-content {
+            padding: 20px 0;
+        }
+        .product-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .badge-instock {
+            background-color: #198754;
+        }
+        .badge-lowstock {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .badge-outstock {
+            background-color: #dc3545;
+        }
+        .badge-onsale {
+            background-color: #0dcaf0;
+            color: #000;
+        }
+        .section-container {
+            display: none;
+        }
+        .section-container.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Verificación de acceso admin -->
+    <script>
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        if (!currentUser || currentUser.role !== "admin") {
+            alert('Acceso restringido: se requieren privilegios de administrador');
+            window.location.href = "index.html";
+        }
+    </script>
+
+    <!-- Header -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
+        <div class="container">
+            <a class="navbar-brand fs-3 fw-bold" href="index.html">
+                <i class="fas fa-running me-2"></i>PoliSport
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="productos.html"><i class="fas fa-tags me-1"></i>Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="reseñas.html"><i class="fas fa-star me-1"></i>Reseñas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contacto.html"><i class="fas fa-envelope me-1"></i>Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ofertas.html"><i class="fas fa-percentage me-1"></i>Ofertas</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin.html"><i class="fas fa-cog me-1"></i>Admin</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <form class="me-3 d-none d-lg-block" role="search">
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="search" placeholder="Buscar productos..." aria-label="Buscar">
+                            <button class="btn btn-light btn-sm" type="submit"><i class="fas fa-search"></i></button>
+                        </div>
+                    </form>
+                    <div id="userControls">
+                        <!-- Contenido dinámico -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="admin-section">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h1 class="fw-bold mb-3">Panel de Administración</h1>
+                <p class="lead text-muted">Gestiona todos los aspectos de tu tienda</p>
+            </div>
+
+            <div class="row">
+                <!-- Tarjeta Gestión de Productos -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card admin-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-box-open"></i>
+                            <h3 class="card-title">Productos</h3>
+                            <p class="card-text">Administra el catálogo de productos de la tienda</p>
+                            <button id="btnProductos" class="btn btn-primary">Gestionar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Gestión de Usuarios -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card admin-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users"></i>
+                            <h3 class="card-title">Usuarios</h3>
+                            <p class="card-text">Administra los usuarios registrados</p>
+                            <button id="btnUsuarios" class="btn btn-primary">Ver Usuarios</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Estadísticas -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card admin-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line"></i>
+                            <h3 class="card-title">Estadísticas</h3>
+                            <p class="card-text">Visualiza reportes y métricas de ventas</p>
+                            <button id="btnEstadisticas" class="btn btn-primary">Ver Reportes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Productos -->
+            <div id="seccionProductos" class="section-container mt-5">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">Gestión de Productos</h3>
+                        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#agregarProductoModal">
+                            <i class="fas fa-plus me-1"></i>Agregar
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <!-- Filtros -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-2">
+                                <label for="filtroCategoria" class="form-label">Categoría</label>
+                                <select class="form-select" id="filtroCategoria">
+                                    <option value="">Todas</option>
+                                    <option value="Ropa">Ropa</option>
+                                    <option value="Calzado">Calzado</option>
+                                    <option value="Accesorios">Accesorios</option>
+                                    <option value="Equipamiento">Equipamiento</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label for="filtroEstado" class="form-label">Estado</label>
+                                <select class="form-select" id="filtroEstado">
+                                    <option value="">Todos</option>
+                                    <option value="En stock">En stock</option>
+                                    <option value="Poco stock">Poco stock</option>
+                                    <option value="Agotado">Agotado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label for="buscarProducto" class="form-label">Buscar</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="buscarProducto" placeholder="Nombre, SKU o descripción">
+                                    <button class="btn btn-outline-secondary" type="button" id="btnBuscarProducto">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de productos -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Imagen</th>
+                                        <th>Nombre</th>
+                                        <th>Categoría</th>
+                                        <th>Precio</th>
+                                        <th>Stock</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaProductos">
+                                    <!-- Datos se cargarán dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Usuarios -->
+            <div id="seccionUsuarios" class="section-container mt-5">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Usuarios Registrados</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Rol</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaUsuarios">
+                                    <!-- Datos se cargarán dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Estadísticas -->
+            <div id="seccionEstadisticas" class="section-container mt-5">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Estadísticas y Reportes</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Métricas rápidas -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="card stat-card primary h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Ventas Totales</h5>
+                                        <h2 class="card-text" id="ventasTotales">$0</h2>
+                                        <p class="text-muted small">Últimos 30 días</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stat-card success h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Nuevos Usuarios</h5>
+                                        <h2 class="card-text" id="nuevosUsuarios">0</h2>
+                                        <p class="text-muted small">Últimos 30 días</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stat-card warning h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Pedidos</h5>
+                                        <h2 class="card-text" id="totalPedidos">0</h2>
+                                        <p class="text-muted small">Últimos 30 días</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stat-card danger h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Productos</h5>
+                                        <h2 class="card-text" id="totalProductos">0</h2>
+                                        <p class="text-muted small">En catálogo</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráficos -->
+                        <div class="row">
+                            <div class="col-md-8 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Ventas Mensuales</h5>
+                                        <div class="chart-container">
+                                            <canvas id="ventasChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Categorías más vendidas</h5>
+                                        <div class="chart-container">
+                                            <canvas id="categoriasChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modales para Productos -->
+    <div class="modal fade" id="agregarProductoModal" tabindex="-1" aria-labelledby="agregarProductoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarProductoModalLabel">Agregar Nuevo Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formProducto">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="productoNombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="productoNombre" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="productoCategoria" class="form-label">Categoría</label>
+                                    <select class="form-select" id="productoCategoria" required>
+                                        <option value="Ropa">Ropa</option>
+                                        <option value="Calzado">Calzado</option>
+                                        <option value="Accesorios">Accesorios</option>
+                                        <option value="Equipamiento">Equipamiento</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="productoPrecio" class="form-label">Precio</label>
+                                    <input type="number" step="0.01" class="form-control" id="productoPrecio" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="productoStock" class="form-label">Stock</label>
+                                    <input type="number" class="form-control" id="productoStock" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="productoImagen" class="form-label">Imagen URL</label>
+                                    <input type="text" class="form-control" id="productoImagen">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="productoDescripcion" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="productoDescripcion" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarProducto">Guardar Producto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales para Usuarios -->
+    <div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-labelledby="editarUsuarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarUsuarioModalLabel">Editar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarUsuario">
+                        <input type="hidden" id="editUserIndex">
+                        <div class="mb-3">
+                            <label for="editNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="editNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRol" class="form-label">Rol</label>
+                            <select class="form-select" id="editRol" required>
+                                <option value="user">Usuario</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarCambiosUsuario">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar -->
+    <div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="confirmarEliminarModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmarEliminarModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar este elemento?</p>
+                    <p class="text-danger fw-bold">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para notificaciones -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">Notificación</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                Operación realizada con éxito.
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h5>PoliSport</h5>
+                    <p>Tu tienda deportiva de confianza con los mejores productos para tu entrenamiento y competición.</p>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h5>Enlaces</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-white">Inicio</a></li>
+                        <li><a href="productos.html" class="text-white">Productos</a></li>
+                        <li><a href="contacto.html" class="text-white">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contacto</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Calle Falsa 123, Ciudad</li>
+                        <li><i class="fas fa-phone me-2"></i> +123 456 789</li>
+                        <li><i class="fas fa-envelope me-2"></i> info@polisport.com</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 bg-light">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2023 PoliSport. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Datos iniciales
+        let productos = JSON.parse(localStorage.getItem('polisport_productos')) || [];
+        let usuarios = JSON.parse(localStorage.getItem('polisport_users')) || [];
+        let elementoAEliminar = null;
+        let tipoEliminacion = null; // 'producto' o 'usuario'
+        const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar controles de usuario
+            configurarUsuario();
+            
+            // Eventos de los botones principales
+            document.getElementById('btnProductos').addEventListener('click', function() {
+                mostrarSeccion('seccionProductos');
+                cargarProductos();
+            });
+            
+            document.getElementById('btnUsuarios').addEventListener('click', function() {
+                mostrarSeccion('seccionUsuarios');
+                cargarUsuarios();
+            });
+            
+            document.getElementById('btnEstadisticas').addEventListener('click', function() {
+                mostrarSeccion('seccionEstadisticas');
+                cargarEstadisticas();
+            });
+            
+            // Eventos para productos
+            document.getElementById('btnGuardarProducto').addEventListener('click', guardarProducto);
+            document.getElementById('btnBuscarProducto').addEventListener('click', cargarProductos);
+            document.getElementById('filtroCategoria').addEventListener('change', cargarProductos);
+            document.getElementById('filtroEstado').addEventListener('change', cargarProductos);
+            
+            // Eventos para usuarios
+            document.getElementById('btnGuardarCambiosUsuario').addEventListener('click', guardarCambiosUsuario);
+            document.getElementById('btnConfirmarEliminar').addEventListener('click', eliminarConfirmado);
+            
+            // Cargar datos iniciales si no existen
+            if (usuarios.length === 0) {
+                usuarios = [
+                    { nombre: 'Admin', email: 'admin@polisport.com', role: 'admin', password: 'admin123' },
+                    { nombre: 'Usuario', email: 'usuario@polisport.com', role: 'user', password: 'usuario123' }
+                ];
+                localStorage.setItem('polisport_users', JSON.stringify(usuarios));
+            }
+            
+            if (productos.length === 0) {
+                productos = [
+                    { 
+                        id: 1, 
+                        nombre: 'Zapatos Running', 
+                        categoria: 'Calzado', 
+                        precio: 89.99, 
+                        stock: 50, 
+                        imagen: 'https://via.placeholder.com/150', 
+                        descripcion: 'Zapatos para running de última generación' 
+                    },
+                    { 
+                        id: 2, 
+                        nombre: 'Camiseta Deportiva', 
+                        categoria: 'Ropa', 
+                        precio: 29.99, 
+                        stock: 120, 
+                        imagen: 'https://via.placeholder.com/150', 
+                        descripcion: 'Camiseta transpirable para deportes' 
+                    }
+                ];
+                localStorage.setItem('polisport_productos', JSON.stringify(productos));
+            }
+        });
+
+        // Funciones generales
+        function mostrarSeccion(seccionId) {
+            document.querySelectorAll('.section-container').forEach(seccion => {
+                seccion.classList.remove('active');
+            });
+            document.getElementById(seccionId).classList.add('active');
+        }
+
+        function mostrarToast(titulo, mensaje, tipo = 'success') {
+            const toastHeader = document.getElementById('liveToast').querySelector('.toast-header');
+            toastHeader.className = 'toast-header text-bg-' + tipo;
+            document.getElementById('toastTitle').textContent = titulo;
+            document.getElementById('toastMessage').textContent = mensaje;
+            toast.show();
+        }
+
+        // Funciones para usuarios
+        function configurarUsuario() {
+            const userControls = document.getElementById('userControls');
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+
+            if (currentUser) {
+                userControls.innerHTML = `
+                    <a href="carrito.html" class="btn btn-outline-light btn-sm position-relative me-2">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                    </a>
+                    <span class="navbar-text me-2">${currentUser.nombre}</span>
+                    <button id="logoutBtn" class="btn btn-danger btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i> Salir
+                    </button>
+                `;
+
+                document.getElementById('logoutBtn').addEventListener('click', function() {
+                    sessionStorage.removeItem('currentUser');
+                    window.location.href = "index.html";
+                });
+            } else {
+                userControls.innerHTML = `
+                    <a href="login.html" class="btn btn-light btn-sm me-2">
+                        <i class="fas fa-user me-1"></i> Login
+                    </a>
+                    <a href="registro.html" class="btn btn-danger btn-sm">
+                        <i class="fas fa-user-plus me-1"></i> Registro
+                    </a>
+                `;
+            }
+        }
+
+        function cargarUsuarios() {
+            const tablaUsuarios = document.getElementById('tablaUsuarios');
+            tablaUsuarios.innerHTML = '';
+            
+            usuarios.forEach((usuario, index) => {
+                const fila = `
+                    <tr>
+                        <td>${usuario.nombre}</td>
+                        <td>${usuario.email}</td>
+                        <td><span class="badge ${usuario.role === 'admin' ? 'bg-danger' : 'bg-primary'}">${usuario.role}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2 btn-editar-usuario" data-index="${index}">
+                                <i class="fas fa-edit me-1"></i>Editar
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger btn-eliminar-usuario" data-index="${index}">
+                                <i class="fas fa-trash-alt me-1"></i>Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tablaUsuarios.innerHTML += fila;
+            });
+            
+            // Agregar eventos a los botones
+            document.querySelectorAll('.btn-editar-usuario').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    editarUsuario(index);
+                });
+            });
+            
+            document.querySelectorAll('.btn-eliminar-usuario').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    confirmarEliminar('usuario', index);
+                });
+            });
+        }
+
+        function editarUsuario(index) {
+            const usuario = usuarios[index];
+            document.getElementById('editUserIndex').value = index;
+            document.getElementById('editNombre').value = usuario.nombre;
+            document.getElementById('editEmail').value = usuario.email;
+            document.getElementById('editRol').value = usuario.role || 'user';
+            
+            const modal = new bootstrap.Modal(document.getElementById('editarUsuarioModal'));
+            modal.show();
+        }
+
+        function guardarCambiosUsuario() {
+            const index = document.getElementById('editUserIndex').value;
+            const usuario = usuarios[index];
+            
+            // Validar email único
+            const nuevoEmail = document.getElementById('editEmail').value;
+            if (nuevoEmail !== usuario.email) {
+                const emailExistente = usuarios.some((u, i) => i !== parseInt(index) && u.email === nuevoEmail);
+                if (emailExistente) {
+                    mostrarToast('Error', 'El email ya está en uso por otro usuario', 'danger');
+                    return;
+                }
+            }
+            
+            // Actualizar datos
+            usuario.nombre = document.getElementById('editNombre').value;
+            usuario.email = nuevoEmail;
+            usuario.role = document.getElementById('editRol').value;
+            
+            // Guardar cambios
+            localStorage.setItem('polisport_users', JSON.stringify(usuarios));
+            
+            // Si el usuario editado es el actual, actualizar sessionStorage
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (currentUser && currentUser.email === usuario.email) {
+                sessionStorage.setItem('currentUser', JSON.stringify(usuario));
+            }
+            
+            // Cerrar modal y actualizar tabla
+            bootstrap.Modal.getInstance(document.getElementById('editarUsuarioModal')).hide();
+            cargarUsuarios();
+            mostrarToast('Éxito', 'Usuario actualizado correctamente', 'success');
+        }
+
+        // Funciones para productos
+        function cargarProductos() {
+            const tablaProductos = document.getElementById('tablaProductos');
+            tablaProductos.innerHTML = '';
+            
+            const categoria = document.getElementById('filtroCategoria').value;
+            const estado = document.getElementById('filtroEstado').value;
+            const busqueda = document.getElementById('buscarProducto').value.toLowerCase();
+            
+            const productosFiltrados = productos.filter(producto => {
+                // Filtrar por categoría
+                if (categoria && producto.categoria !== categoria) return false;
+                
+                // Filtrar por estado
+                if (estado) {
+                    if (estado === 'En stock' && producto.stock <= 10) return false;
+                    if (estado === 'Poco stock' && (producto.stock > 10 || producto.stock === 0)) return false;
+                    if (estado === 'Agotado' && producto.stock > 0) return false;
+                }
+                
+                // Filtrar por búsqueda
+                if (busqueda) {
+                    const textoBusqueda = `${producto.nombre} ${producto.categoria} ${producto.descripcion}`.toLowerCase();
+                    if (!textoBusqueda.includes(busqueda)) return false;
+                }
+                
+                return true;
+            });
+            
+            if (productosFiltrados.length === 0) {
+                tablaProductos.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center">No se encontraron productos</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            productosFiltrados.forEach((producto, index) => {
+                let estadoBadge = '';
+                if (producto.stock === 0) {
+                    estadoBadge = '<span class="badge badge-outstock">Agotado</span>';
+                } else if (producto.stock <= 10) {
+                    estadoBadge = '<span class="badge badge-lowstock">Poco stock</span>';
+                } else {
+                    estadoBadge = '<span class="badge badge-instock">En stock</span>';
+                }
+                
+                const fila = `
+                    <tr>
+                        <td><img src="${producto.imagen || 'https://via.placeholder.com/60'}" alt="${producto.nombre}" class="product-img"></td>
+                        <td>${producto.nombre}</td>
+                        <td>${producto.categoria}</td>
+                        <td>$${producto.precio.toFixed(2)}</td>
+                        <td>${producto.stock}</td>
+                        <td>${estadoBadge}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2 btn-editar-producto" data-index="${index}">
+                                <i class="fas fa-edit me-1"></i>Editar
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger btn-eliminar-producto" data-index="${index}">
+                                <i class="fas fa-trash-alt me-1"></i>Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tablaProductos.innerHTML += fila;
+            });
+            
+            // Agregar eventos a los botones
+            document.querySelectorAll('.btn-editar-producto').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    // Implementar lógica de edición de producto
+                    mostrarToast('Información', 'Función de edición de producto en desarrollo', 'info');
+                });
+            });
+            
+            document.querySelectorAll('.btn-eliminar-producto').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    confirmarEliminar('producto', index);
+                });
+            });
+        }
+
+        function guardarProducto() {
+            const nuevoProducto = {
+                id: productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1,
+                nombre: document.getElementById('productoNombre').value,
+                categoria: document.getElementById('productoCategoria').value,
+                precio: parseFloat(document.getElementById('productoPrecio').value),
+                stock: parseInt(document.getElementById('productoStock').value),
+                imagen: document.getElementById('productoImagen').value || 'https://via.placeholder.com/150',
+                descripcion: document.getElementById('productoDescripcion').value
+            };
+            
+            productos.push(nuevoProducto);
+            localStorage.setItem('polisport_productos', JSON.stringify(productos));
+            
+            // Limpiar formulario
+            document.getElementById('formProducto').reset();
+            
+            // Cerrar modal y actualizar tabla
+            bootstrap.Modal.getInstance(document.getElementById('agregarProductoModal')).hide();
+            cargarProductos();
+            mostrarToast('Éxito', 'Producto agregado correctamente', 'success');
+        }
+
+        // Funciones para estadísticas
+        function cargarEstadisticas() {
+            // Datos de ejemplo
+            const datos = {
+                ventasTotales: 12540.75,
+                nuevosUsuarios: usuarios.filter(u => {
+                    // Simular usuarios nuevos (últimos 30 días)
+                    return Math.random() > 0.5;
+                }).length,
+                totalPedidos: Math.floor(Math.random() * 100) + 20,
+                totalProductos: productos.length,
+                ventasMensuales: [850, 920, 1020, 1150, 1200, 1350, 1450, 1300, 1250, 1400, 1550, 1700],
+                categoriasVendidas: [45, 30, 15, 10]
+            };
+            
+            // Actualizar métricas
+            document.getElementById('ventasTotales').textContent = `$${datos.ventasTotales.toFixed(2)}`;
+            document.getElementById('nuevosUsuarios').textContent = datos.nuevosUsuarios;
+            document.getElementById('totalPedidos').textContent = datos.totalPedidos;
+            document.getElementById('totalProductos').textContent = datos.totalProductos;
+            
+            // Gráfico de ventas mensuales
+            const ventasCtx = document.getElementById('ventasChart').getContext('2d');
+            new Chart(ventasCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                    datasets: [{
+                        label: 'Ventas ($)',
+                        data: datos.ventasMensuales,
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de categorías más vendidas
+            const categoriasCtx = document.getElementById('categoriasChart').getContext('2d');
+            new Chart(categoriasCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ropa', 'Calzado', 'Accesorios', 'Equipamiento'],
+                    datasets: [{
+                        data: datos.categoriasVendidas,
+                        backgroundColor: [
+                            '#0d6efd',
+                            '#198754',
+                            '#ffc107',
+                            '#dc3545'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Funciones para eliminación
+        function confirmarEliminar(tipo, index) {
+            tipoEliminacion = tipo;
+            elementoAEliminar = index;
+            
+            const modal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
+            modal.show();
+        }
+
+        function eliminarConfirmado() {
+            if (tipoEliminacion === 'usuario') {
+                // Verificar que no sea el usuario actual
+                const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+                const usuario = usuarios[elementoAEliminar];
+                
+                if (currentUser && currentUser.email === usuario.email) {
+                    mostrarToast('Error', 'No puedes eliminar tu propio usuario', 'danger');
+                    bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarModal')).hide();
+                    return;
+                }
+                
+                usuarios.splice(elementoAEliminar, 1);
+                localStorage.setItem('polisport_users', JSON.stringify(usuarios));
+                cargarUsuarios();
+                mostrarToast('Éxito', 'Usuario eliminado correctamente', 'success');
+            } else if (tipoEliminacion === 'producto') {
+                productos.splice(elementoAEliminar, 1);
+                localStorage.setItem('polisport_productos', JSON.stringify(productos));
+                cargarProductos();
+                mostrarToast('Éxito', 'Producto eliminado correctamente', 'success');
+            }
+            
+            bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarModal')).hide();
+            elementoAEliminar = null;
+            tipoEliminacion = null;
+        }
+    </script>
+</body>
+</html>

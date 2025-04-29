@@ -80,34 +80,42 @@
                 <div class="col-lg-8">
                     <div class="registro-form">
                         <form id="registroForm">
-                            <div class="row mb-3">
-                                <div class="col-md-6 mb-3 mb-md-0">
-                                    <label for="nombre" class="form-label">Nombre</label>
-                                    <input type="text" class="form-control" id="nombre" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="apellido" class="form-label">Apellido</label>
-                                    <input type="text" class="form-control" id="apellido" required>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Correo electrónico</label>
-                                <input type="email" class="form-control" id="email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="password" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="confirmarPassword" class="form-label">Confirmar contraseña</label>
-                                <input type="password" class="form-control" id="confirmarPassword" required>
-                            </div>
-                            <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="terminos" required>
-                                <label class="form-check-label" for="terminos">Acepto los <a href="#">términos y condiciones</a></label>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Registrarse</button>
-                        </form>
+							<div class="row mb-3">
+								<div class="col-md-6 mb-3 mb-md-0">
+									<label for="nombre" class="form-label">Nombre</label>
+									<input type="text" class="form-control" id="nombre" required>
+								</div>
+								<div class="col-md-6">
+									<label for="apellido" class="form-label">Apellido</label>
+									<input type="text" class="form-control" id="apellido" required>
+								</div>
+							</div>
+							<div class="mb-3">
+								<label for="email" class="form-label">Correo electrónico</label>
+								<input type="email" class="form-control" id="email" required>
+							</div>
+							<div class="mb-3">
+								<label for="password" class="form-label">Contraseña</label>
+								<input type="password" class="form-control" id="password" required>
+							</div>
+							<div class="mb-3">
+								<label for="confirmarPassword" class="form-label">Confirmar contraseña</label>
+								<input type="password" class="form-control" id="confirmarPassword" required>
+							</div>
+							<!-- Campo de selección de rol modificado -->
+							<div class="mb-3">
+								<label for="userRole" class="form-label">Tipo de usuario</label>
+								<select class="form-control" id="userRole" required>
+									<option value="usuario" selected>usuario</option>
+									<option value="admin">Administrador</option>
+								</select>
+							</div>
+							<div class="mb-3 form-check">
+								<input type="checkbox" class="form-check-input" id="terminos" required>
+								<label class="form-check-label" for="terminos">Acepto los <a href="#">términos y condiciones</a></label>
+							</div>
+							<button type="submit" class="btn btn-primary">Registrarse</button>
+						</form>
                     </div>
                 </div>
             </div>
@@ -149,55 +157,121 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const registroForm = document.getElementById('registroForm');
+document.addEventListener('DOMContentLoaded', function() {
+    const registroForm = document.getElementById('registroForm');
+    
+    registroForm.addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        registroForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Obtener datos del formulario
+        const nombre = document.getElementById('nombre').value;
+        const apellido = document.getElementById('apellido').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmarPassword = document.getElementById('confirmarPassword').value;
+        const role = document.getElementById('userRole').value;
+        
+        // Validaciones
+        if (password !== confirmarPassword) {
+            alert('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
+            return;
+        }
+        
+        // Obtener usuarios existentes
+        const usuarios = JSON.parse(localStorage.getItem('polisport_users')) || [];
+        
+        // Verificar si el email ya está registrado
+        if (usuarios.some(user => user.email === email)) {
+            alert('Este email ya está registrado. Por favor, usa otro o inicia sesión.');
+            return;
+        }
+        
+        // Crear nuevo usuario con rol
+        const nuevoUsuario = {
+            nombre,
+            apellido,
+            email,
+            password,
+            role
+        };
+        
+        // Guardar usuario
+        usuarios.push(nuevoUsuario);
+        localStorage.setItem('polisport_users', JSON.stringify(usuarios));
+        
+        alert('¡Registro exitoso! Bienvenido a PoliSport.');
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 1000);
+    });
+});
+</script>
+<script>
+    // Mostrar estado de login y rol
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        const loginBtn = document.querySelector('a[href="login.html"]');
+        const registerBtn = document.querySelector('a[href="registro.html"]');
+        
+        if (currentUser) {
+            loginBtn.innerHTML = `<i class="fas fa-user me-1"></i>${currentUser.nombre}`;
+            loginBtn.href = "#";
+            loginBtn.classList.add('disabled');
             
-            // Obtener datos del formulario
-            const nombre = document.getElementById('nombre').value;
-            const apellido = document.getElementById('apellido').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmarPassword = document.getElementById('confirmarPassword').value;
+            registerBtn.innerHTML = `<i class="fas fa-sign-out-alt me-1"></i>Cerrar sesión`;
+            registerBtn.href = "#";
+            registerBtn.addEventListener('click', function() {
+                sessionStorage.removeItem('currentUser');
+                window.location.href = "index.html";
+            });
             
-            // Validaciones
-            if (password !== confirmarPassword) {
-                alert('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
-                return;
+            // Si es admin, mostrar enlace al panel
+            if (currentUser.role === "admin") {
+                const nav = document.querySelector('.navbar-nav');
+                const adminLink = `
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.html">
+                            <i class="fas fa-cog me-1"></i>Admin
+                        </a>
+                    </li>
+                `;
+                nav.insertAdjacentHTML('beforeend', adminLink);
             }
+        }
+    });
+</script>
+<script>
+    // Mostrar estado de login y rol
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        const loginBtn = document.querySelector('a[href="login.html"]');
+        const registerBtn = document.querySelector('a[href="registro.html"]');
+        
+        if (currentUser) {
+            loginBtn.innerHTML = `<i class="fas fa-user me-1"></i>${currentUser.nombre}`;
+            loginBtn.href = "#";
+            loginBtn.classList.add('disabled');
             
-            // Obtener usuarios existentes o crear array vacío
-            const usuarios = JSON.parse(localStorage.getItem('polisport_users')) || [];
+            registerBtn.innerHTML = `<i class="fas fa-sign-out-alt me-1"></i>Cerrar sesión`;
+            registerBtn.href = "#";
+            registerBtn.addEventListener('click', function() {
+                sessionStorage.removeItem('currentUser');
+                window.location.href = "index.html";
+            });
             
-            // Verificar si el email ya está registrado
-            const existeUsuario = usuarios.some(user => user.email === email);
-            if (existeUsuario) {
-                alert('Este email ya está registrado. Por favor, usa otro o inicia sesión.');
-                return;
+            // Si es admin, mostrar enlace al panel
+            if (currentUser.role === "admin") {
+                const nav = document.querySelector('.navbar-nav');
+                const adminLink = `
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.html">
+                            <i class="fas fa-cog me-1"></i>Admin
+                        </a>
+                    </li>
+                `;
+                nav.insertAdjacentHTML('beforeend', adminLink);
             }
-            
-            // Crear nuevo usuario
-            const nuevoUsuario = {
-                nombre,
-                apellido,
-                email,
-                password // En una app real esto debería estar hasheado
-            };
-            
-            // Guardar usuario
-            usuarios.push(nuevoUsuario);
-            localStorage.setItem('polisport_users', JSON.stringify(usuarios));
-            
-            // Mostrar mensaje de éxito
-            alert('¡Registro exitoso! Bienvenido a PoliSport.');
-            
-            // Redirigir a login después de 1 segundo
-            setTimeout(() => {
-                window.location.href = "login.html";
-            }, 1000);
-        });
+        }
     });
 </script>
 </body>
