@@ -118,19 +118,11 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="productos.html"><i class="fas fa-tags me-1"></i>Productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="reseñas.html"><i class="fas fa-star me-1"></i>Reseñas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contacto.html"><i class="fas fa-envelope me-1"></i>Contacto</a></li>
-                    <li class="nav-item"><a class="nav-link" href="ofertas.html"><i class="fas fa-percentage me-1"></i>Ofertas</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="admin.html"><i class="fas fa-cog me-1"></i>Admin</a></li>
+                    
                 </ul>
                 <div class="d-flex align-items-center">
                     <form class="me-3 d-none d-lg-block" role="search">
-                        <div class="input-group">
-                            <input class="form-control form-control-sm" type="search" placeholder="Buscar productos..." aria-label="Buscar">
-                            <button class="btn btn-light btn-sm" type="submit"><i class="fas fa-search"></i></button>
-                        </div>
+                        
                     </form>
                     <div id="userControls">
                         <!-- Contenido dinámico -->
@@ -607,10 +599,7 @@
 
             if (currentUser) {
                 userControls.innerHTML = `
-                    <a href="carrito.html" class="btn btn-outline-light btn-sm position-relative me-2">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
-                    </a>
+                    
                     <span class="navbar-text me-2">${currentUser.nombre}</span>
                     <button id="logoutBtn" class="btn btn-danger btn-sm">
                         <i class="fas fa-sign-out-alt me-1"></i> Salir
